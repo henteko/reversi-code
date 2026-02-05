@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Text } from "ink";
 import { COLORS } from "../theme.js";
 
 export interface LogEntry {
@@ -23,19 +22,17 @@ export function GameLog({ entries, maxLines = 6 }: GameLogProps) {
   const visible = entries.slice(-maxLines);
 
   return (
-    <Box flexDirection="column">
-      <Text color={COLORS.muted} bold>
-        ─ Game Log ─
-      </Text>
+    <box flexDirection="column">
+      <text><b fg={COLORS.muted}>─ Game Log ─</b></text>
       {visible.length === 0 ? (
-        <Text color={COLORS.muted}>No events yet.</Text>
+        <text fg={COLORS.muted}>No events yet.</text>
       ) : (
         visible.map((entry, i) => (
-          <Text key={i} color={LOG_COLORS[entry.type]}>
+          <text key={i} fg={LOG_COLORS[entry.type]}>
             {entry.message}
-          </Text>
+          </text>
         ))
       )}
-    </Box>
+    </box>
   );
 }

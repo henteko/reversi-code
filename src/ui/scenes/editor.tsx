@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Text, useInput } from "ink";
+import { useKeyboard } from "@opentui/react";
 import { COLORS } from "../theme.js";
 import { DEFAULT_PLAYER_CODE } from "../theme.js";
 import type { CpuRank } from "../../cpu/types.js";
@@ -23,9 +23,9 @@ export function EditorScene({ rank, initialCode, onStartBattle, onBack }: Editor
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [buildOk, setBuildOk] = useState(false);
 
-  useInput((input, key) => {
+  useKeyboard((key) => {
     // Ctrl+R: Build (transpile check)
-    if (key.ctrl && input === "r") {
+    if (key.ctrl && key.name === "r") {
       setBuildStatus("building");
       setErrorMessage(undefined);
       const code = editorActions.getCode();
@@ -44,7 +44,7 @@ export function EditorScene({ rank, initialCode, onStartBattle, onBack }: Editor
     }
 
     // Ctrl+D: Start battle (only after successful build)
-    if (key.ctrl && input === "d") {
+    if (key.ctrl && key.name === "d") {
       if (buildOk) {
         onStartBattle(editorActions.getCode());
       }
@@ -52,7 +52,7 @@ export function EditorScene({ rank, initialCode, onStartBattle, onBack }: Editor
     }
 
     // Ctrl+Q: Back to rank-select
-    if (key.ctrl && input === "q") {
+    if (key.ctrl && key.name === "q") {
       onBack();
       return;
     }
@@ -76,7 +76,7 @@ export function EditorScene({ rank, initialCode, onStartBattle, onBack }: Editor
   const modeColor = editorState.mode === "normal" ? COLORS.info : COLORS.success;
 
   return (
-    <Box flexDirection="column">
+    <box flexDirection="column">
       <CodeEditor
         editorState={editorState}
         editorActions={editorActions}
@@ -86,30 +86,26 @@ export function EditorScene({ rank, initialCode, onStartBattle, onBack }: Editor
       />
 
       {/* Status bar */}
-      <Text color={COLORS.muted}>{"─".repeat(60)}</Text>
-      <Box gap={2}>
-        <Text color={modeColor} bold>
-          -- {modeLabel} --
-        </Text>
-        <Text color={COLORS.accent} bold>
-          VS {CPU_RANK_INFO[rank].title}
-        </Text>
-        <Text color={statusColors[buildStatus]}>
+      <text fg={COLORS.muted}>{"─".repeat(60)}</text>
+      <box flexDirection="row" gap={2}>
+        <text><b fg={modeColor}>-- {modeLabel} --</b></text>
+        <text><b fg={COLORS.accent}>VS {CPU_RANK_INFO[rank].title}</b></text>
+        <text fg={statusColors[buildStatus]}>
           [{statusText[buildStatus]}]
-        </Text>
-      </Box>
+        </text>
+      </box>
       {errorMessage && (
-        <Text color={COLORS.error} wrap="truncate">
-          {errorMessage}
-        </Text>
+        <text fg={COLORS.error}>
+          {errorMessage.slice(0, 60)}
+        </text>
       )}
-      <Box gap={2}>
-        <Text color={COLORS.muted}>Ctrl+R: Build</Text>
-        <Text color={buildOk ? COLORS.success : COLORS.muted}>
+      <box flexDirection="row" gap={2}>
+        <text fg={COLORS.muted}>Ctrl+R: Build</text>
+        <text fg={buildOk ? COLORS.success : COLORS.muted}>
           Ctrl+D: Start Battle{buildOk ? "" : " (build first)"}
-        </Text>
-        <Text color={COLORS.muted}>Ctrl+Q: Back</Text>
-      </Box>
-    </Box>
+        </text>
+        <text fg={COLORS.muted}>Ctrl+Q: Back</text>
+      </box>
+    </box>
   );
 }

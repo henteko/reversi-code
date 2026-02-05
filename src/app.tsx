@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Box, useInput, useApp } from "ink";
+import { useKeyboard } from "@opentui/react";
 import type { GamePhase } from "./types.js";
 import type { Board } from "./types.js";
 import type { CpuRank } from "./cpu/types.js";
@@ -15,7 +15,6 @@ import { createBoard } from "./engine/board.js";
 import { COLORS } from "./ui/theme.js";
 
 export function App() {
-  const { exit } = useApp();
   const [phase, setPhase] = useState<GamePhase>("title");
   const [progress, setProgress] = useState<ProgressData>(loadProgress);
   const [selectedRank, setSelectedRank] = useState<CpuRank>("E");
@@ -26,13 +25,15 @@ export function App() {
   const [compiledCode, setCompiledCode] = useState<string>("");
 
   // Global quit handler
-  useInput((input, key) => {
+  useKeyboard((key) => {
     // q on title, Ctrl+Q anywhere except battle and editor (they handle their own)
-    if (input === "q" && phase === "title") {
-      exit();
+    if (key.name === "q" && !key.ctrl && !key.meta && phase === "title") {
+      process.stdout.write("\x1b[0m\x1b[2J\x1b[H");
+      process.exit(0);
     }
-    if (key.ctrl && input === "q" && phase !== "battle" && phase !== "editor") {
-      exit();
+    if (key.ctrl && key.name === "q" && phase !== "battle" && phase !== "editor") {
+      process.stdout.write("\x1b[0m\x1b[2J\x1b[H");
+      process.exit(0);
     }
   });
 
@@ -152,8 +153,8 @@ export function App() {
   }
 
   return (
-    <Box backgroundColor={COLORS.appBg} width="100%">
+    <box backgroundColor={COLORS.appBg} width="100%">
       {scene}
-    </Box>
+    </box>
   );
 }

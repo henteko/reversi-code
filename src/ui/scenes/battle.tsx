@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Box, Text, useInput } from "ink";
+import { useKeyboard } from "@opentui/react";
 import { COLORS } from "../theme.js";
 import type { CpuRank } from "../../cpu/types.js";
 import { CPU_RANK_INFO } from "../../cpu/types.js";
@@ -39,8 +39,8 @@ export function BattleScene({ rank, code, onResult, onQuit }: BattleSceneProps) 
     }
   }, [gameState.isFinished, gameState.result, rank, code, onResult]);
 
-  useInput((input, key) => {
-    if (key.ctrl && input === "q") {
+  useKeyboard((key) => {
+    if (key.ctrl && key.name === "q") {
       if (!gameState.isRunning) {
         abort();
         onQuit();
@@ -50,10 +50,10 @@ export function BattleScene({ rank, code, onResult, onQuit }: BattleSceneProps) 
   });
 
   return (
-    <Box flexDirection="column">
-      <Box>
+    <box flexDirection="column">
+      <box flexDirection="row">
         {/* Left panel: Board */}
-        <Box flexDirection="column" width={36} marginRight={2}>
+        <box flexDirection="column" width={36} marginRight={2}>
           <BoardView
             board={gameState.board}
             validMoves={gameState.validMoves}
@@ -61,52 +61,50 @@ export function BattleScene({ rank, code, onResult, onQuit }: BattleSceneProps) 
             flippedCells={gameState.flippedCells}
             currentPlayer={gameState.currentPlayer ?? undefined}
           />
-          <Box marginTop={1}>
+          <box flexDirection="row" marginTop={1}>
             <ScoreBar
               blackScore={gameState.blackScore}
               whiteScore={gameState.whiteScore}
               currentPlayer={gameState.currentPlayer}
             />
-          </Box>
-          <Box marginTop={1}>
+          </box>
+          <box flexDirection="row" marginTop={1}>
             <TurnIndicator
               currentPlayer={gameState.currentPlayer}
               isThinking={gameState.isThinking}
               turnNumber={gameState.turnNumber}
             />
-          </Box>
-        </Box>
+          </box>
+        </box>
 
         {/* Right panel: Game log */}
-        <Box flexDirection="column" flexGrow={1}>
+        <box flexDirection="column" flexGrow={1}>
           <GameLog entries={gameState.logs} maxLines={Math.max(8, process.stdout.rows - 6)} />
-        </Box>
-      </Box>
+        </box>
+      </box>
 
       {/* Bottom: Status */}
-      <Text color={COLORS.muted}>{"─".repeat(60)}</Text>
-      <Box gap={2}>
-        <Text color={COLORS.accent} bold>
-          VS {CPU_RANK_INFO[rank].title}
-        </Text>
+      <text fg={COLORS.muted}>{"─".repeat(60)}</text>
+      <box flexDirection="row" gap={2}>
+        <text><b fg={COLORS.accent}>VS {CPU_RANK_INFO[rank].title}</b></text>
         {gameState.isRunning && (
-          <Text color={COLORS.success}>[Running]</Text>
+          <text fg={COLORS.success}>[Running]</text>
         )}
         {gameState.isFinished && (
-          <Text color={COLORS.info}>[Finished]</Text>
+          <text fg={COLORS.info}>[Finished]</text>
         )}
         {gameState.errorMessage && (
-          <Text color={COLORS.error}>[Error]</Text>
+          <text fg={COLORS.error}>[Error]</text>
         )}
-      </Box>
+      </box>
       {gameState.errorMessage && (
-        <Text color={COLORS.error} wrap="truncate">
-          {gameState.errorMessage}
-        </Text>
+        <text fg={COLORS.error}>
+          {gameState.errorMessage.slice(0, 60)}
+        </text>
       )}
-      <Box gap={2}>
-        <Text color={COLORS.muted}>Ctrl+Q: Quit</Text>
-      </Box>
-    </Box>
+      <box flexDirection="row" gap={2}>
+        <text fg={COLORS.muted}>Ctrl+Q: Quit</text>
+      </box>
+    </box>
   );
 }

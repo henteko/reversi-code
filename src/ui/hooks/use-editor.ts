@@ -11,24 +11,17 @@ export interface EditorState {
   pendingKey: string;
 }
 
-export interface EditorActions {
-  handleInput: (input: string, key: KeyInfo) => void;
-  getCode: () => string;
-  setCode: (code: string) => void;
+export interface KeyInfo {
+  name: string;
+  ctrl: boolean;
+  meta: boolean;
+  shift: boolean;
 }
 
-interface KeyInfo {
-  upArrow?: boolean;
-  downArrow?: boolean;
-  leftArrow?: boolean;
-  rightArrow?: boolean;
-  return?: boolean;
-  backspace?: boolean;
-  delete?: boolean;
-  tab?: boolean;
-  escape?: boolean;
-  ctrl?: boolean;
-  meta?: boolean;
+export interface EditorActions {
+  handleInput: (key: KeyInfo) => void;
+  getCode: () => string;
+  setCode: (code: string) => void;
 }
 
 export function useEditor(
@@ -57,13 +50,13 @@ export function useEditor(
   };
 
   const handleInput = useCallback(
-    (input: string, key: KeyInfo) => {
+    (key: KeyInfo) => {
       setState((prev) => {
         const lines = [...prev.lines];
         let { cursorRow, cursorCol, scrollOffset, mode, pendingKey } = prev;
 
         // --- ESCAPE: always go to normal mode ---
-        if (key.escape) {
+        if (key.name === "escape") {
           if (mode === "insert") {
             mode = "normal";
             cursorCol = Math.max(0, Math.min(cursorCol - 1, lines[cursorRow].length - 1));
@@ -81,7 +74,7 @@ export function useEditor(
         // INSERT MODE
         // =====================
         if (mode === "insert") {
-          if (key.upArrow) {
+          if (key.name === "up") {
             if (cursorRow > 0) {
               cursorRow--;
               cursorCol = Math.min(cursorCol, lines[cursorRow].length);
@@ -89,7 +82,7 @@ export function useEditor(
             }
             return { lines, cursorRow, cursorCol, scrollOffset, mode, pendingKey };
           }
-          if (key.downArrow) {
+          if (key.name === "down") {
             if (cursorRow < lines.length - 1) {
               cursorRow++;
               cursorCol = Math.min(cursorCol, lines[cursorRow].length);
@@ -97,16 +90,16 @@ export function useEditor(
             }
             return { lines, cursorRow, cursorCol, scrollOffset, mode, pendingKey };
           }
-          if (key.leftArrow) {
+          if (key.name === "left") {
             if (cursorCol > 0) cursorCol--;
             return { lines, cursorRow, cursorCol, scrollOffset, mode, pendingKey };
           }
-          if (key.rightArrow) {
+          if (key.name === "right") {
             if (cursorCol < lines[cursorRow].length) cursorCol++;
             return { lines, cursorRow, cursorCol, scrollOffset, mode, pendingKey };
           }
 
-          if (key.return) {
+          if (key.name === "return") {
             const currentLine = lines[cursorRow];
             const before = currentLine.slice(0, cursorCol);
             const after = currentLine.slice(cursorCol);
@@ -121,7 +114,7 @@ export function useEditor(
           }
 
           // Backspace and Delete both delete backward in insert mode
-          if (key.backspace || key.delete) {
+          if (key.name === "backspace" || key.name === "delete") {
             if (cursorCol > 0) {
               const line = lines[cursorRow];
               lines[cursorRow] = line.slice(0, cursorCol - 1) + line.slice(cursorCol);
@@ -138,7 +131,7 @@ export function useEditor(
             return { lines, cursorRow, cursorCol, scrollOffset, mode, pendingKey };
           }
 
-          if (key.tab) {
+          if (key.name === "tab") {
             const line = lines[cursorRow];
             lines[cursorRow] = line.slice(0, cursorCol) + "  " + line.slice(cursorCol);
             cursorCol += 2;
@@ -146,7 +139,8 @@ export function useEditor(
           }
 
           // Regular character
-          if (input && input.length === 1) {
+          if (key.name.length === 1 && !key.ctrl && !key.meta) {
+            const input = key.name;
             const line = lines[cursorRow];
             lines[cursorRow] = line.slice(0, cursorCol) + input + line.slice(cursorCol);
             cursorCol++;
@@ -171,6 +165,7 @@ export function useEditor(
         // =====================
         // NORMAL MODE
         // =====================
+        const input = key.name;
 
         // Handle pending two-key combos
         if (pendingKey === "d") {
@@ -204,16 +199,16 @@ export function useEditor(
         }
 
         // Motion keys
-        if (input === "h" || key.leftArrow) {
+        if (input === "h" || key.name === "left") {
           if (cursorCol > 0) cursorCol--;
           return { lines, cursorRow, cursorCol, scrollOffset, mode, pendingKey: "" };
         }
-        if (input === "l" || key.rightArrow) {
+        if (input === "l" || key.name === "right") {
           const maxCol = Math.max(0, lines[cursorRow].length - 1);
           if (cursorCol < maxCol) cursorCol++;
           return { lines, cursorRow, cursorCol, scrollOffset, mode, pendingKey: "" };
         }
-        if (input === "j" || key.downArrow) {
+        if (input === "j" || key.name === "down") {
           if (cursorRow < lines.length - 1) {
             cursorRow++;
             cursorCol = clampCol(cursorCol, lines[cursorRow], "normal");
@@ -221,7 +216,7 @@ export function useEditor(
           }
           return { lines, cursorRow, cursorCol, scrollOffset, mode, pendingKey: "" };
         }
-        if (input === "k" || key.upArrow) {
+        if (input === "k" || key.name === "up") {
           if (cursorRow > 0) {
             cursorRow--;
             cursorCol = clampCol(cursorCol, lines[cursorRow], "normal");

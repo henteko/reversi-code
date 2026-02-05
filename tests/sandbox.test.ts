@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 import { executePlayerCode } from "../src/sandbox/executor.js";
 import { createBoard } from "../src/engine/board.js";
 
@@ -44,7 +44,7 @@ describe("sandbox", () => {
     if (!result.ok) {
       expect(result.errorType).toBe("timeout");
     }
-  }, 10000);
+  }, { timeout: 10000 });
 
   it("should handle invalid return value (not an array)", async () => {
     const code = `

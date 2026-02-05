@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Text, useInput } from "ink";
+import { useKeyboard } from "@opentui/react";
 import { COLORS, SYMBOLS } from "../theme.js";
 import type { Board } from "../../types.js";
 import type { CpuRank } from "../../cpu/types.js";
@@ -28,18 +28,18 @@ export function ResultScene({
 }: ResultSceneProps) {
   const [selectedIdx, setSelectedIdx] = useState(0);
 
-  useInput((input, key) => {
+  useKeyboard((key) => {
     // j/l: next option, k/h: prev option
-    if (input === "j" || input === "l" || key.downArrow || key.rightArrow) {
+    if (key.name === "j" || key.name === "l" || key.name === "down" || key.name === "right") {
       setSelectedIdx((prev) => Math.min(prev + 1, ACTIONS.length - 1));
       return;
     }
-    if (input === "k" || input === "h" || key.upArrow || key.leftArrow) {
+    if (key.name === "k" || key.name === "h" || key.name === "up" || key.name === "left") {
       setSelectedIdx((prev) => Math.max(prev - 1, 0));
       return;
     }
     // Enter: confirm
-    if (key.return) {
+    if (key.name === "return") {
       if (selectedIdx === 0) onContinue();
       else onRematch();
       return;
@@ -63,67 +63,56 @@ export function ResultScene({
   }
 
   return (
-    <Box flexDirection="column" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 22) / 2))} paddingX={2}>
-      <Box justifyContent="center" marginBottom={1}>
-        <Text color={titleColor} bold>
-          ══════ {title} ══════
-        </Text>
-      </Box>
+    <box flexDirection="column" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 22) / 2))} paddingLeft={2} paddingRight={2}>
+      <box flexDirection="row" justifyContent="center" marginBottom={1}>
+        <text><b fg={titleColor}>══════ {title} ══════</b></text>
+      </box>
 
-      <Box>
-        <Box marginRight={2}>
+      <box flexDirection="row">
+        <box flexDirection="column" marginRight={2}>
           <BoardView board={board} />
-        </Box>
-        <Box flexDirection="column">
-          <Text color={COLORS.editorText}>
+        </box>
+        <box flexDirection="column">
+          <text fg={COLORS.editorText}>
             vs {CPU_RANK_INFO[rank].title}
-          </Text>
-          <Box marginTop={1} flexDirection="column">
-            <Text color={COLORS.black} bold>
-              {SYMBOLS.black} Black (You): {result.blackScore}
-            </Text>
-            <Text color={COLORS.white} bold>
-              {SYMBOLS.white} White (CPU): {result.whiteScore}
-            </Text>
-          </Box>
-          <Box marginTop={1}>
-            <Text color={COLORS.muted}>
+          </text>
+          <box marginTop={1} flexDirection="column">
+            <text fg={COLORS.black}><b>{SYMBOLS.black} Black (You): {result.blackScore}</b></text>
+            <text fg={COLORS.white}><b>{SYMBOLS.white} White (CPU): {result.whiteScore}</b></text>
+          </box>
+          <box flexDirection="row" marginTop={1}>
+            <text fg={COLORS.muted}>
               Total turns: {result.totalTurns}
-            </Text>
-          </Box>
+            </text>
+          </box>
           {result.forfeit && (
-            <Box marginTop={1}>
-              <Text color={COLORS.error}>
+            <box flexDirection="row" marginTop={1}>
+              <text fg={COLORS.error}>
                 Game ended by forfeit (code error)
-              </Text>
-            </Box>
+              </text>
+            </box>
           )}
           {unlockedRank && (
-            <Box marginTop={1}>
-              <Text color={COLORS.success} bold>
-                {CPU_RANK_INFO[unlockedRank].title} unlocked!
-              </Text>
-            </Box>
+            <box flexDirection="row" marginTop={1}>
+              <text><b fg={COLORS.success}>{CPU_RANK_INFO[unlockedRank].title} unlocked!</b></text>
+            </box>
           )}
-        </Box>
-      </Box>
+        </box>
+      </box>
 
-      <Box marginTop={2} gap={2}>
+      <box flexDirection="row" marginTop={2} gap={2}>
         {ACTIONS.map((action, idx) => (
-          <Text
-            key={action}
-            color={idx === selectedIdx ? COLORS.accent : COLORS.muted}
-            bold={idx === selectedIdx}
-          >
-            {idx === selectedIdx ? "▸ " : "  "}
-            {action}
-          </Text>
+          idx === selectedIdx ? (
+            <text key={action}><b fg={COLORS.accent}>▸ {action}</b></text>
+          ) : (
+            <text key={action} fg={COLORS.muted}>  {action}</text>
+          )
         ))}
-      </Box>
-      <Box marginTop={1} gap={2}>
-        <Text color={COLORS.muted}>j/k: Move</Text>
-        <Text color={COLORS.muted}>Enter: Select</Text>
-      </Box>
-    </Box>
+      </box>
+      <box flexDirection="row" marginTop={1} gap={2}>
+        <text fg={COLORS.muted}>j/k: Move</text>
+        <text fg={COLORS.muted}>Enter: Select</text>
+      </box>
+    </box>
   );
 }

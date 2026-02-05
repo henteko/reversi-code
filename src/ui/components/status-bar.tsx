@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Text } from "ink";
 import { COLORS } from "../theme.js";
 import type { CpuRank } from "../../cpu/types.js";
 import { CPU_RANK_INFO } from "../../cpu/types.js";
@@ -31,31 +30,27 @@ export function StatusBar({ rank, compileStatus = "idle", errorMessage, vimMode 
   const modeColor = vimMode === "normal" ? COLORS.info : COLORS.success;
 
   return (
-    <Box flexDirection="column">
-      <Text color={COLORS.muted}>{"─".repeat(60)}</Text>
-      <Box gap={2}>
-        <Text color={modeColor} bold>
-          -- {modeLabel} --
-        </Text>
+    <box flexDirection="column">
+      <text fg={COLORS.muted}>{"─".repeat(60)}</text>
+      <box flexDirection="row" gap={2}>
+        <text><b fg={modeColor}>-- {modeLabel} --</b></text>
         {rank && (
-          <Text color={COLORS.accent} bold>
-            VS {CPU_RANK_INFO[rank].title}
-          </Text>
+          <text><b fg={COLORS.accent}>VS {CPU_RANK_INFO[rank].title}</b></text>
         )}
-        <Text color={statusColors[compileStatus]}>
+        <text fg={statusColors[compileStatus]}>
           [{statusText[compileStatus]}]
-        </Text>
-      </Box>
+        </text>
+      </box>
       {errorMessage && (
-        <Text color={COLORS.error} wrap="truncate">
-          {errorMessage}
-        </Text>
+        <text fg={COLORS.error}>
+          {errorMessage.slice(0, 60)}
+        </text>
       )}
-      <Box gap={2}>
-        <Text color={COLORS.muted}>Ctrl+D: Deploy</Text>
-        <Text color={COLORS.muted}>Ctrl+R: Reset</Text>
-        <Text color={COLORS.muted}>Ctrl+Q: Quit</Text>
-      </Box>
-    </Box>
+      <box flexDirection="row" gap={2}>
+        <text fg={COLORS.muted}>Ctrl+D: Deploy</text>
+        <text fg={COLORS.muted}>Ctrl+R: Reset</text>
+        <text fg={COLORS.muted}>Ctrl+Q: Quit</text>
+      </box>
+    </box>
   );
 }

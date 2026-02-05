@@ -5,22 +5,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev          # Run app (tsx src/index.tsx)
-npm test             # Run all tests (vitest run)
-npm run test:watch   # Run tests in watch mode
-npm run build        # Compile TypeScript (tsc)
-npx tsc --noEmit     # Type check only
+bun src/index.tsx     # Run app
+bun test              # Run all tests (bun test)
+bun run build         # Compile TypeScript (tsc)
+bunx tsc --noEmit     # Type check only
 
 # Run a single test file
-npm test -- tests/sandbox.test.ts
+bun test tests/sandbox.test.ts
 
 # Run tests matching a name pattern
-npm test -- -t "should execute valid"
+bun test -t "should execute valid"
 ```
 
 ## Architecture
 
-Terminal-based Reversi game where the player writes a `decideMove()` function in a built-in Vim-style code editor. The player's TypeScript code is transpiled with esbuild and executed in an isolated-vm sandbox each turn.
+Terminal-based Reversi game where the player writes a `decideMove()` function in a built-in Vim-style code editor. The player's TypeScript code is transpiled with esbuild and executed in a node:vm sandbox each turn.
 
 ### Game Loop (AsyncGenerator pattern)
 
@@ -29,7 +28,7 @@ Terminal-based Reversi game where the player writes a `decideMove()` function in
 ### Sandbox Execution (two-phase)
 
 1. **Transpile** (`src/sandbox/transpiler.ts`): esbuild transforms TypeScript to ES2022
-2. **Execute** (`src/sandbox/executor.ts`): Creates a new `ivm.Isolate` per turn (32MB memory, 1000ms timeout). Board state and player color are injected as globals. The player's `decideMove(board, myColor)` must return `[row, col]` (0-7 integers). No require/import/network/fs access.
+2. **Execute** (`src/sandbox/executor.ts`): Uses `node:vm` (`vm.runInNewContext`) with 1000ms timeout. Board state and player color are injected as globals. The player's `decideMove(board, myColor)` must return `[row, col]` (0-7 integers). No require/import/network/fs access.
 
 Player errors (compile, runtime, timeout, invalid-return) result in immediate forfeit.
 
@@ -57,7 +56,7 @@ Wins and rank unlocks persisted at `~/.reversi-code/progress.json` via `src/prog
 ## Conventions
 
 - Pure ESM project (`type: "module"` in package.json). Use `.js` extensions in import paths.
-- Strict TypeScript with `moduleResolution: "bundler"`, target ES2022, JSX via react-jsx.
+- Runtime: Bun. UI: @opentui/react (JSX elements: `<box>`, `<text>`, `<span>`, `<b>`, `<u>`). Colors via `fg`/`bg` props.
+- Strict TypeScript with `moduleResolution: "bundler"`, target ES2022, JSX via react-jsx, `jsxImportSource: "@opentui/react"`.
 - Engine logic in `src/engine/` is pure (no UI/IO dependencies) and must stay that way.
-- Vitest with `globals: false` — always import `describe`, `it`, `expect` from `"vitest"`.
-- Test timeout is 15000ms (configured in vitest.config.ts).
+- Bun test — always import `describe`, `it`, `expect` from `"bun:test"`.

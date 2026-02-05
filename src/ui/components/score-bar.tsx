@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Text } from "ink";
 import { SYMBOLS, COLORS } from "../theme.js";
 
 interface ScoreBarProps {
@@ -10,21 +9,21 @@ interface ScoreBarProps {
 
 export function ScoreBar({ blackScore, whiteScore, currentPlayer }: ScoreBarProps) {
   return (
-    <Box gap={2}>
-      <Text
-        color={COLORS.black}
-        bold={currentPlayer === "black"}
-        underline={currentPlayer === "black"}
-      >
-        {SYMBOLS.black} Black: {blackScore}
-      </Text>
-      <Text
-        color={COLORS.white}
-        bold={currentPlayer === "white"}
-        underline={currentPlayer === "white"}
-      >
-        {SYMBOLS.white} White: {whiteScore}
-      </Text>
-    </Box>
+    <box flexDirection="row" gap={2}>
+      <text fg={COLORS.black}>
+        {currentPlayer === "black" ? (
+          <u><b>{SYMBOLS.black} Black: {blackScore}</b></u>
+        ) : (
+          <>{SYMBOLS.black} Black: {blackScore}</>
+        )}
+      </text>
+      <text fg={COLORS.white}>
+        {currentPlayer === "white" ? (
+          <u><b>{SYMBOLS.white} White: {whiteScore}</b></u>
+        ) : (
+          <>{SYMBOLS.white} White: {whiteScore}</>
+        )}
+      </text>
+    </box>
   );
 }

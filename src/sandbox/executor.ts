@@ -1,9 +1,8 @@
-import ivm from "isolated-vm";
+import vm from "node:vm";
 import type { Board, PlayerColor, Position } from "../types.js";
 import type { SandboxResult } from "./types.js";
 import { transpileTypeScript } from "./transpiler.js";
 
-const MEMORY_LIMIT_MB = 32;
 const TIMEOUT_MS = 1000;
 
 export async function executePlayerCode(
@@ -24,16 +23,13 @@ export async function executePlayerCode(
     };
   }
 
-  let isolate: ivm.Isolate | null = null;
-
   try {
-    isolate = new ivm.Isolate({ memoryLimit: MEMORY_LIMIT_MB });
-    const context = await isolate.createContext();
-    const jail = context.global;
+    const sandbox = {
+      __board__: JSON.stringify(board),
+      __myColor__: myColor,
+    };
 
-    // Inject board and myColor
-    await jail.set("__board__", JSON.stringify(board));
-    await jail.set("__myColor__", myColor);
+    const context = vm.createContext(sandbox);
 
     // Wrap player code: call decideMove and return result
     const wrappedCode = `
@@ -44,7 +40,7 @@ export async function executePlayerCode(
       JSON.stringify(__result__);
     `;
 
-    const resultStr = await context.eval(wrappedCode, { timeout: TIMEOUT_MS });
+    const resultStr = vm.runInNewContext(wrappedCode, context, { timeout: TIMEOUT_MS });
     const elapsed = Date.now() - start;
 
     // Validate result
@@ -102,9 +98,5 @@ export async function executePlayerCode(
       errorType: "runtime",
       executionTimeMs: elapsed,
     };
-  } finally {
-    if (isolate) {
-      isolate.dispose();
-    }
   }
 }

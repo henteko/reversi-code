@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Text } from "ink";
 import type { Board, Position, PlayerColor } from "../../types.js";
 import { SYMBOLS, COLORS } from "../theme.js";
 
@@ -24,11 +23,11 @@ export function BoardView({
   const colLabels = "  a b c d e f g h";
 
   return (
-    <Box flexDirection="column">
-      <Text color={COLORS.muted}>{colLabels}</Text>
+    <box flexDirection="column">
+      <text fg={COLORS.muted}>{colLabels}</text>
       {board.map((row, rowIdx) => (
-        <Box key={rowIdx}>
-          <Text color={COLORS.muted}>{rowIdx + 1} </Text>
+        <box key={rowIdx} flexDirection="row">
+          <text fg={COLORS.muted}>{rowIdx + 1} </text>
           {row.map((cell, colIdx) => {
             const pos: Position = [rowIdx, colIdx];
             const isLastMove = lastMove && lastMove[0] === rowIdx && lastMove[1] === colIdx;
@@ -60,13 +59,13 @@ export function BoardView({
             }
 
             return (
-              <Text key={colIdx} color={color} backgroundColor={bgColor}>
+              <text key={colIdx} fg={color} bg={bgColor}>
                 {symbol}{colIdx < 7 ? " " : ""}
-              </Text>
+              </text>
             );
           })}
-        </Box>
+        </box>
       ))}
-    </Box>
+    </box>
   );
 }

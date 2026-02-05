@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Text, useInput } from "ink";
+import { useKeyboard } from "@opentui/react";
 import { COLORS } from "../theme.js";
 import type { CpuRank } from "../../cpu/types.js";
 import { CPU_RANK_ORDER, CPU_RANK_INFO } from "../../cpu/types.js";
@@ -13,19 +13,19 @@ interface RankSelectSceneProps {
 export function RankSelectScene({ unlockedRanks, onSelect, onBack }: RankSelectSceneProps) {
   const [selectedIdx, setSelectedIdx] = useState(0);
 
-  useInput((input, key) => {
+  useKeyboard((key) => {
     // j / down: move down
-    if (input === "j" || key.downArrow) {
+    if (key.name === "j" || key.name === "down") {
       setSelectedIdx((prev) => Math.min(prev + 1, CPU_RANK_ORDER.length - 1));
       return;
     }
     // k / up: move up
-    if (input === "k" || key.upArrow) {
+    if (key.name === "k" || key.name === "up") {
       setSelectedIdx((prev) => Math.max(prev - 1, 0));
       return;
     }
     // l / Enter: select
-    if (input === "l" || key.return) {
+    if (key.name === "l" || key.name === "return") {
       const rank = CPU_RANK_ORDER[selectedIdx];
       if (unlockedRanks.includes(rank)) {
         onSelect(rank);
@@ -33,21 +33,19 @@ export function RankSelectScene({ unlockedRanks, onSelect, onBack }: RankSelectS
       return;
     }
     // h / Escape: back
-    if (input === "h" || key.escape) {
+    if (key.name === "h" || key.name === "escape") {
       onBack();
       return;
     }
   });
 
   return (
-    <Box flexDirection="column" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 10) / 2))} paddingX={2}>
-      <Text color={COLORS.accent} bold>
-        Select Opponent Rank
-      </Text>
-      <Text color={COLORS.muted}>
+    <box flexDirection="column" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 10) / 2))} paddingLeft={2} paddingRight={2}>
+      <text><b fg={COLORS.accent}>Select Opponent Rank</b></text>
+      <text fg={COLORS.muted}>
         Defeat each rank to unlock the next one.
-      </Text>
-      <Box marginTop={1} flexDirection="column">
+      </text>
+      <box marginTop={1} flexDirection="column">
         {CPU_RANK_ORDER.map((rank, idx) => {
           const isSelected = idx === selectedIdx;
           const isUnlocked = unlockedRanks.includes(rank);
@@ -55,27 +53,26 @@ export function RankSelectScene({ unlockedRanks, onSelect, onBack }: RankSelectS
           const indicator = isSelected ? "▸ " : "  ";
 
           return (
-            <Box key={rank}>
-              <Text color={isSelected ? COLORS.accent : COLORS.muted}>
+            <box key={rank} flexDirection="row">
+              <text fg={isSelected ? COLORS.accent : COLORS.muted}>
                 {indicator}
-              </Text>
-              <Text
-                color={!isUnlocked ? COLORS.muted : isSelected ? COLORS.accent : COLORS.editorText}
-                bold={isSelected && isUnlocked}
-                dimColor={!isUnlocked}
-              >
-                {info.title}
-                {!isUnlocked && " [LOCKED]"}
-              </Text>
-            </Box>
+              </text>
+              {isSelected && isUnlocked ? (
+                <text><b fg={COLORS.accent}>{info.title}</b></text>
+              ) : !isUnlocked ? (
+                <text fg="#444444">{info.title} [LOCKED]</text>
+              ) : (
+                <text fg={COLORS.editorText}>{info.title}</text>
+              )}
+            </box>
           );
         })}
-      </Box>
-      <Box marginTop={1} gap={2}>
-        <Text color={COLORS.muted}>j/k: Move</Text>
-        <Text color={COLORS.muted}>l/Enter: Select</Text>
-        <Text color={COLORS.muted}>h/Esc: Back</Text>
-      </Box>
-    </Box>
+      </box>
+      <box flexDirection="row" marginTop={1} gap={2}>
+        <text fg={COLORS.muted}>j/k: Move</text>
+        <text fg={COLORS.muted}>l/Enter: Select</text>
+        <text fg={COLORS.muted}>h/Esc: Back</text>
+      </box>
+    </box>
   );
 }

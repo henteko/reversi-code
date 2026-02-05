@@ -1,5 +1,4 @@
 import React from "react";
-import { Text } from "ink";
 import { COLORS } from "../theme.js";
 
 const KEYWORDS = new Set([
@@ -84,15 +83,15 @@ interface SyntaxHighlighterProps {
 
 export function SyntaxHighlighter({ line }: SyntaxHighlighterProps) {
   const tokens = tokenizeLine(line);
-  if (tokens.length === 0) return <Text> </Text>;
+  if (tokens.length === 0) return <text> </text>;
 
   return (
-    <Text>
+    <text>
       {tokens.map((token, i) => (
-        <Text key={i} color={token.color}>
+        <span key={i} fg={token.color}>
           {token.text}
-        </Text>
+        </span>
       ))}
-    </Text>
+    </text>
   );
 }

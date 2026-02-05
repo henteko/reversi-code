@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Text, useInput } from "ink";
+import { useKeyboard } from "@opentui/react";
 import { COLORS } from "../theme.js";
 import { SyntaxHighlighter } from "./syntax-highlighter.js";
 import type { EditorState, EditorActions } from "../hooks/use-editor.js";
@@ -23,14 +23,10 @@ export function CodeEditor({
 }: CodeEditorProps) {
   const { lines, cursorRow, cursorCol, scrollOffset, mode } = editorState;
 
-  useInput(
-    (input, key) => {
-      if (isActive) {
-        editorActions.handleInput(input, key);
-      }
-    },
-    { isActive },
-  );
+  useKeyboard((key) => {
+    if (!isActive) return;
+    editorActions.handleInput(key);
+  });
 
   const visibleRange = lines.slice(scrollOffset, scrollOffset + visibleLines);
   const lineNumWidth = String(lines.length).length + 1;
@@ -39,47 +35,43 @@ export function CodeEditor({
   const modeColor = mode === "normal" ? COLORS.info : COLORS.success;
 
   return (
-    <Box flexDirection="column" width={width}>
-      <Box>
-        <Text color={COLORS.muted} bold>
-          ─ Code Editor ─{" "}
-        </Text>
-        <Text color={modeColor} bold>
-          [{modeLabel}]
-        </Text>
+    <box flexDirection="column" width={width}>
+      <box flexDirection="row">
+        <text><b fg={COLORS.muted}>─ Code Editor ─ </b></text>
+        <text><b fg={modeColor}>[{modeLabel}]</b></text>
         {hint && (
-          <Text color={COLORS.muted} dimColor>
+          <text fg="#444444">
             {" "}{hint}
-          </Text>
+          </text>
         )}
-      </Box>
+      </box>
       {visibleRange.map((line, idx) => {
         const lineNum = scrollOffset + idx;
         const isCursorLine = lineNum === cursorRow;
         const numStr = String(lineNum + 1).padStart(lineNumWidth, " ");
 
         return (
-          <Box key={lineNum}>
-            <Text color={COLORS.editorLineNumber}>
+          <box key={lineNum} flexDirection="row">
+            <text fg={COLORS.editorLineNumber}>
               {numStr}{" "}
-            </Text>
+            </text>
             {isCursorLine && isActive ? (
               <CursorLine line={line} cursorCol={cursorCol} mode={mode} />
             ) : (
               <SyntaxHighlighter line={line} />
             )}
-          </Box>
+          </box>
         );
       })}
       {visibleRange.length < visibleLines &&
         Array.from({ length: visibleLines - visibleRange.length }).map((_, i) => (
-          <Box key={`empty-${i}`}>
-            <Text color={COLORS.editorLineNumber}>
+          <box key={`empty-${i}`} flexDirection="row">
+            <text fg={COLORS.editorLineNumber}>
               {"~".padStart(lineNumWidth, " ")}{" "}
-            </Text>
-          </Box>
+            </text>
+          </box>
         ))}
-    </Box>
+    </box>
   );
 }
 
@@ -100,12 +92,12 @@ function CursorLine({
   const cursorBg = mode === "normal" ? COLORS.editorCursor : COLORS.accent;
 
   return (
-    <Text>
-      <Text color={COLORS.editorText}>{before}</Text>
-      <Text color={COLORS.editorBg} backgroundColor={cursorBg}>
+    <text>
+      <span fg={COLORS.editorText}>{before}</span>
+      <span fg={COLORS.editorBg} bg={cursorBg}>
         {cursorChar}
-      </Text>
-      <Text color={COLORS.editorText}>{after}</Text>
-    </Text>
+      </span>
+      <span fg={COLORS.editorText}>{after}</span>
+    </text>
   );
 }

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 import { createBoard } from "../src/engine/board.js";
 import { getValidMoves, isValidMove, applyMove, isGameOver } from "../src/engine/rules.js";
 import { getCpuStrategy } from "../src/cpu/index.js";
