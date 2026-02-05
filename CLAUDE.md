@@ -19,7 +19,7 @@ bun test -t "should execute valid"
 
 ## Architecture
 
-Terminal-based Reversi game where the player writes a `decideMove()` function in a built-in Vim-style code editor. The player's TypeScript code is transpiled with esbuild and executed in a node:vm sandbox each turn.
+Terminal-based Reversi game where the player writes a `decideMove()` function in a built-in Vim-style code editor. The player's TypeScript code is transpiled with esbuild and executed in a QuickJS WebAssembly sandbox each turn.
 
 ### Game Loop (AsyncGenerator pattern)
 
@@ -28,7 +28,7 @@ Terminal-based Reversi game where the player writes a `decideMove()` function in
 ### Sandbox Execution (two-phase)
 
 1. **Transpile** (`src/sandbox/transpiler.ts`): esbuild transforms TypeScript to ES2022
-2. **Execute** (`src/sandbox/executor.ts`): Uses `node:vm` (`vm.runInNewContext`) with 1000ms timeout. Board state and player color are injected as globals. The player's `decideMove(board, myColor)` must return `[row, col]` (0-7 integers). No require/import/network/fs access.
+2. **Execute** (`src/sandbox/executor.ts`): Uses QuickJS WebAssembly sandbox (`@sebastianwessel/quickjs`) with 1000ms timeout and 32MB memory limit. Board state and player color are embedded in the code string. The player's `decideMove(board, myColor)` must return `[row, col]` (0-7 integers). No require/import/network/fs access.
 
 Player errors (compile, runtime, timeout, invalid-return) result in immediate forfeit.
 

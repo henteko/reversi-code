@@ -1,9 +1,21 @@
-import vm from "node:vm";
+import variant from "@jitl/quickjs-ng-wasmfile-release-sync";
+import { loadQuickJs } from "@sebastianwessel/quickjs";
 import type { Board, PlayerColor, Position } from "../types.js";
 import type { SandboxResult } from "./types.js";
 import { transpileTypeScript } from "./transpiler.js";
 
 const TIMEOUT_MS = 1000;
+const MEMORY_LIMIT = 32 * 1024 * 1024; // 32MB
+const MAX_STACK_SIZE = 1024 * 1024; // 1MB
+
+let _engine: Awaited<ReturnType<typeof loadQuickJs>> | null = null;
+
+async function getEngine() {
+  if (!_engine) {
+    _engine = await loadQuickJs(variant);
+  }
+  return _engine;
+}
 
 export async function executePlayerCode(
   source: string,
@@ -24,37 +36,54 @@ export async function executePlayerCode(
   }
 
   try {
-    const sandbox = {
-      __board__: JSON.stringify(board),
-      __myColor__: myColor,
-    };
+    const { runSandboxed } = await getEngine();
 
-    const context = vm.createContext(sandbox);
-
-    // Wrap player code: call decideMove and return result
     const wrappedCode = `
-      const board = JSON.parse(__board__);
-      const myColor = __myColor__;
+      const board = ${JSON.stringify(board)};
+      const myColor = ${JSON.stringify(myColor)};
       ${transpiled.code}
-      const __result__ = decideMove(board, myColor);
-      JSON.stringify(__result__);
+      export default decideMove(board, myColor);
     `;
 
-    const resultStr = vm.runInNewContext(wrappedCode, context, { timeout: TIMEOUT_MS });
+    const result = await runSandboxed(
+      async ({ evalCode }) => evalCode(wrappedCode),
+      {
+        executionTimeout: TIMEOUT_MS,
+        memoryLimit: MEMORY_LIMIT,
+        maxStackSize: MAX_STACK_SIZE,
+        allowFs: false,
+        allowFetch: false,
+      },
+    );
+
     const elapsed = Date.now() - start;
 
-    // Validate result
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(resultStr as string);
-    } catch {
+    if (!result.ok) {
+      const errorName = result.error?.name ?? "";
+      const errorMessage = result.error?.message ?? String(result.error);
+
+      if (
+        errorName === "ExecutionTimeout" ||
+        (errorName === "InternalError" && errorMessage === "interrupted")
+      ) {
+        return {
+          ok: false,
+          error: `Execution timed out (${TIMEOUT_MS}ms limit)`,
+          errorType: "timeout",
+          executionTimeMs: elapsed,
+        };
+      }
+
       return {
         ok: false,
-        error: `decideMove() returned invalid value: ${resultStr}`,
-        errorType: "invalid-return",
+        error: errorMessage,
+        errorType: "runtime",
         executionTimeMs: elapsed,
       };
     }
+
+    // Validate result
+    const parsed: unknown = result.data;
 
     if (
       !Array.isArray(parsed) ||
@@ -82,15 +111,6 @@ export async function executePlayerCode(
   } catch (err: unknown) {
     const elapsed = Date.now() - start;
     const message = err instanceof Error ? err.message : String(err);
-
-    if (message.includes("Script execution timed out")) {
-      return {
-        ok: false,
-        error: `Execution timed out (${TIMEOUT_MS}ms limit)`,
-        errorType: "timeout",
-        executionTimeMs: elapsed,
-      };
-    }
 
     return {
       ok: false,

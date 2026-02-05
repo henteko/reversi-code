@@ -9,7 +9,7 @@ A terminal-based Reversi (Othello) game where you write your strategy in TypeScr
 ## Features
 
 - **Code your strategy** -- Write a `decideMove(board, myColor)` function in TypeScript using the built-in Vim-style editor
-- **Sandboxed execution** -- Your code runs in a [node:vm](https://nodejs.org/api/vm.html) sandbox (1s timeout) each turn
+- **Sandboxed execution** -- Your code runs in a QuickJS WebAssembly sandbox (1s timeout, 32MB memory limit) each turn
 - **4 CPU ranks** to beat:
   - **Rank E** -- Random moves
   - **Rank C** -- Greedy (maximizes flips + corner priority)
@@ -82,7 +82,7 @@ bunx tsc --noEmit    # Type check only
 
 - [Bun](https://bun.sh/) -- Runtime
 - [@opentui/react](https://github.com/anthropics/opentui) + [React](https://react.dev/) -- Terminal UI
-- [node:vm](https://nodejs.org/api/vm.html) -- Sandboxed code execution
+- @sebastianwessel/quickjs -- QuickJS WebAssembly-sandboxed code execution
 - [esbuild](https://esbuild.github.io/) -- TypeScript transpilation
 
 ## License
