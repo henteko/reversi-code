@@ -50,9 +50,9 @@ export function BattleScene({ rank, code, onResult, onQuit }: BattleSceneProps) 
   });
 
   return (
-    <box flexDirection="column" flexGrow={1} alignItems="center" justifyContent="center">
+    <box flexDirection="column" flexGrow={1} alignItems="center" paddingTop={1}>
       <box flexDirection="column" width="90%">
-        <box flexDirection="row" flexGrow={1}>
+        <box flexDirection="row">
           {/* Left panel: Board */}
           <box flexDirection="column" marginRight={4}>
             <BoardView
@@ -78,9 +78,9 @@ export function BattleScene({ rank, code, onResult, onQuit }: BattleSceneProps) 
             </box>
           </box>
 
-          {/* Right panel: Game log */}
+          {/* Right panel: Game log (maxLines=12 matches left panel height: board 9 + score 2 + turn 2 = 13, minus log header 1) */}
           <box flexDirection="column" flexGrow={1}>
-            <GameLog entries={gameState.logs} maxLines={Math.max(8, process.stdout.rows - 8)} />
+            <GameLog entries={gameState.logs} maxLines={12} />
           </box>
         </box>
 
