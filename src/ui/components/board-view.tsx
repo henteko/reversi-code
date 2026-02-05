@@ -37,7 +37,7 @@ export function BoardView({
 
             let symbol: string;
             let color: string;
-            let bgColor: string | undefined;
+            let bgColor: string = COLORS.boardBg;
 
             if (cell === "black") {
               symbol = SYMBOLS.black;

@@ -7,8 +7,8 @@ export const SYMBOLS = {
 } as const;
 
 export const COLORS = {
-  black: "#ffffff",
-  white: "#888888",
+  black: "#c0c0c0",
+  white: "#ffffff",
   board: "#006400",
   boardBg: "#004d00",
   highlight: "#ffff00",
