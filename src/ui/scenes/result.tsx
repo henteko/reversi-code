@@ -63,55 +63,57 @@ export function ResultScene({
   }
 
   return (
-    <box flexDirection="column" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 22) / 2))} paddingLeft={2} paddingRight={2}>
-      <box flexDirection="row" justifyContent="center" marginBottom={1}>
-        <text><b fg={titleColor}>══════ {title} ══════</b></text>
-      </box>
-
-      <box flexDirection="row">
-        <box flexDirection="column" marginRight={2}>
-          <BoardView board={board} />
+    <box flexDirection="column" flexGrow={1} alignItems="center" justifyContent="center" paddingLeft={2} paddingRight={2}>
+      <box flexDirection="column">
+        <box flexDirection="row" justifyContent="center" marginBottom={1}>
+          <text><b fg={titleColor}>══════ {title} ══════</b></text>
         </box>
-        <box flexDirection="column">
-          <text fg={COLORS.editorText}>
-            vs {CPU_RANK_INFO[rank].title}
-          </text>
-          <box marginTop={1} flexDirection="column">
-            <text fg={COLORS.black}><b>{SYMBOLS.black} Black (You): {result.blackScore}</b></text>
-            <text fg={COLORS.white}><b>{SYMBOLS.white} White (CPU): {result.whiteScore}</b></text>
+
+        <box flexDirection="row">
+          <box flexDirection="column" marginRight={2}>
+            <BoardView board={board} />
           </box>
-          <box flexDirection="row" marginTop={1}>
-            <text fg={COLORS.muted}>
-              Total turns: {result.totalTurns}
+          <box flexDirection="column">
+            <text fg={COLORS.editorText}>
+              vs {CPU_RANK_INFO[rank].title}
             </text>
-          </box>
-          {result.forfeit && (
+            <box marginTop={1} flexDirection="column">
+              <text fg={COLORS.black}><b>{SYMBOLS.black} Black (You): {result.blackScore}</b></text>
+              <text fg={COLORS.white}><b>{SYMBOLS.white} White (CPU): {result.whiteScore}</b></text>
+            </box>
             <box flexDirection="row" marginTop={1}>
-              <text fg={COLORS.error}>
-                Game ended by forfeit (code error)
+              <text fg={COLORS.muted}>
+                Total turns: {result.totalTurns}
               </text>
             </box>
-          )}
-          {unlockedRank && (
-            <box flexDirection="row" marginTop={1}>
-              <text><b fg={COLORS.success}>{CPU_RANK_INFO[unlockedRank].title} unlocked!</b></text>
-            </box>
-          )}
+            {result.forfeit && (
+              <box flexDirection="row" marginTop={1}>
+                <text fg={COLORS.error}>
+                  Game ended by forfeit (code error)
+                </text>
+              </box>
+            )}
+            {unlockedRank && (
+              <box flexDirection="row" marginTop={1}>
+                <text><b fg={COLORS.success}>{CPU_RANK_INFO[unlockedRank].title} unlocked!</b></text>
+              </box>
+            )}
+          </box>
         </box>
-      </box>
 
-      <box flexDirection="row" marginTop={2} gap={2}>
-        {ACTIONS.map((action, idx) => (
-          idx === selectedIdx ? (
-            <text key={action}><b fg={COLORS.accent}>▸ {action}</b></text>
-          ) : (
-            <text key={action} fg={COLORS.muted}>  {action}</text>
-          )
-        ))}
-      </box>
-      <box flexDirection="row" marginTop={1} gap={2}>
-        <text fg={COLORS.muted}>j/k: Move</text>
-        <text fg={COLORS.muted}>Enter: Select</text>
+        <box flexDirection="row" marginTop={2} gap={2}>
+          {ACTIONS.map((action, idx) => (
+            idx === selectedIdx ? (
+              <text key={action}><b fg={COLORS.accent}>▸ {action}</b></text>
+            ) : (
+              <text key={action} fg={COLORS.muted}>  {action}</text>
+            )
+          ))}
+        </box>
+        <box flexDirection="row" marginTop={1} gap={2}>
+          <text fg={COLORS.muted}>j/k: Move</text>
+          <text fg={COLORS.muted}>Enter: Select</text>
+        </box>
       </box>
     </box>
   );

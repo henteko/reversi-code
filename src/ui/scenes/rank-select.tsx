@@ -40,38 +40,40 @@ export function RankSelectScene({ unlockedRanks, onSelect, onBack }: RankSelectS
   });
 
   return (
-    <box flexDirection="column" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 10) / 2))} paddingLeft={2} paddingRight={2}>
-      <text><b fg={COLORS.accent}>Select Opponent Rank</b></text>
-      <text fg={COLORS.muted}>
-        Defeat each rank to unlock the next one.
-      </text>
-      <box marginTop={1} flexDirection="column">
-        {CPU_RANK_ORDER.map((rank, idx) => {
-          const isSelected = idx === selectedIdx;
-          const isUnlocked = unlockedRanks.includes(rank);
-          const info = CPU_RANK_INFO[rank];
-          const indicator = isSelected ? "▸ " : "  ";
+    <box flexDirection="column" flexGrow={1} alignItems="center" justifyContent="center">
+      <box flexDirection="column">
+        <text><b fg={COLORS.accent}>Select Opponent Rank</b></text>
+        <text fg={COLORS.muted}>
+          Defeat each rank to unlock the next one.
+        </text>
+        <box marginTop={1} flexDirection="column">
+          {CPU_RANK_ORDER.map((rank, idx) => {
+            const isSelected = idx === selectedIdx;
+            const isUnlocked = unlockedRanks.includes(rank);
+            const info = CPU_RANK_INFO[rank];
+            const indicator = isSelected ? "▸ " : "  ";
 
-          return (
-            <box key={rank} flexDirection="row">
-              <text fg={isSelected ? COLORS.accent : COLORS.muted}>
-                {indicator}
-              </text>
-              {isSelected && isUnlocked ? (
-                <text><b fg={COLORS.accent}>{info.title}</b></text>
-              ) : !isUnlocked ? (
-                <text fg="#444444">{info.title} [LOCKED]</text>
-              ) : (
-                <text fg={COLORS.editorText}>{info.title}</text>
-              )}
-            </box>
-          );
-        })}
-      </box>
-      <box flexDirection="row" marginTop={1} gap={2}>
-        <text fg={COLORS.muted}>j/k: Move</text>
-        <text fg={COLORS.muted}>l/Enter: Select</text>
-        <text fg={COLORS.muted}>h/Esc: Back</text>
+            return (
+              <box key={rank} flexDirection="row">
+                <text fg={isSelected ? COLORS.accent : COLORS.muted}>
+                  {indicator}
+                </text>
+                {isSelected && isUnlocked ? (
+                  <text><b fg={COLORS.accent}>{info.title}</b></text>
+                ) : !isUnlocked ? (
+                  <text fg="#444444">{info.title} [LOCKED]</text>
+                ) : (
+                  <text fg={COLORS.editorText}>{info.title}</text>
+                )}
+              </box>
+            );
+          })}
+        </box>
+        <box flexDirection="row" marginTop={1} gap={2}>
+          <text fg={COLORS.muted}>j/k: Move</text>
+          <text fg={COLORS.muted}>l/Enter: Select</text>
+          <text fg={COLORS.muted}>h/Esc: Back</text>
+        </box>
       </box>
     </box>
   );

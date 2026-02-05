@@ -50,60 +50,62 @@ export function BattleScene({ rank, code, onResult, onQuit }: BattleSceneProps) 
   });
 
   return (
-    <box flexDirection="column">
-      <box flexDirection="row">
-        {/* Left panel: Board */}
-        <box flexDirection="column" width={36} marginRight={2}>
-          <BoardView
-            board={gameState.board}
-            validMoves={gameState.validMoves}
-            lastMove={gameState.lastMove}
-            flippedCells={gameState.flippedCells}
-            currentPlayer={gameState.currentPlayer ?? undefined}
-          />
-          <box flexDirection="row" marginTop={1}>
-            <ScoreBar
-              blackScore={gameState.blackScore}
-              whiteScore={gameState.whiteScore}
-              currentPlayer={gameState.currentPlayer}
+    <box flexDirection="column" flexGrow={1} alignItems="center" justifyContent="center">
+      <box flexDirection="column" width="90%">
+        <box flexDirection="row" flexGrow={1}>
+          {/* Left panel: Board */}
+          <box flexDirection="column" marginRight={4}>
+            <BoardView
+              board={gameState.board}
+              validMoves={gameState.validMoves}
+              lastMove={gameState.lastMove}
+              flippedCells={gameState.flippedCells}
+              currentPlayer={gameState.currentPlayer ?? undefined}
             />
+            <box flexDirection="row" marginTop={1}>
+              <ScoreBar
+                blackScore={gameState.blackScore}
+                whiteScore={gameState.whiteScore}
+                currentPlayer={gameState.currentPlayer}
+              />
+            </box>
+            <box flexDirection="row" marginTop={1}>
+              <TurnIndicator
+                currentPlayer={gameState.currentPlayer}
+                isThinking={gameState.isThinking}
+                turnNumber={gameState.turnNumber}
+              />
+            </box>
           </box>
-          <box flexDirection="row" marginTop={1}>
-            <TurnIndicator
-              currentPlayer={gameState.currentPlayer}
-              isThinking={gameState.isThinking}
-              turnNumber={gameState.turnNumber}
-            />
+
+          {/* Right panel: Game log */}
+          <box flexDirection="column" flexGrow={1}>
+            <GameLog entries={gameState.logs} maxLines={Math.max(8, process.stdout.rows - 8)} />
           </box>
         </box>
 
-        {/* Right panel: Game log */}
-        <box flexDirection="column" flexGrow={1}>
-          <GameLog entries={gameState.logs} maxLines={Math.max(8, process.stdout.rows - 6)} />
+        {/* Bottom: Status */}
+        <text fg={COLORS.muted}>{"─".repeat(Math.floor((process.stdout.columns || 80) * 0.88))}</text>
+        <box flexDirection="row" gap={2}>
+          <text><b fg={COLORS.accent}>VS {CPU_RANK_INFO[rank].title}</b></text>
+          {gameState.isRunning && (
+            <text fg={COLORS.success}>[Running]</text>
+          )}
+          {gameState.isFinished && (
+            <text fg={COLORS.info}>[Finished]</text>
+          )}
+          {gameState.errorMessage && (
+            <text fg={COLORS.error}>[Error]</text>
+          )}
         </box>
-      </box>
-
-      {/* Bottom: Status */}
-      <text fg={COLORS.muted}>{"─".repeat(60)}</text>
-      <box flexDirection="row" gap={2}>
-        <text><b fg={COLORS.accent}>VS {CPU_RANK_INFO[rank].title}</b></text>
-        {gameState.isRunning && (
-          <text fg={COLORS.success}>[Running]</text>
-        )}
-        {gameState.isFinished && (
-          <text fg={COLORS.info}>[Finished]</text>
-        )}
         {gameState.errorMessage && (
-          <text fg={COLORS.error}>[Error]</text>
+          <text fg={COLORS.error}>
+            {gameState.errorMessage.slice(0, Math.floor((process.stdout.columns || 80) * 0.9))}
+          </text>
         )}
-      </box>
-      {gameState.errorMessage && (
-        <text fg={COLORS.error}>
-          {gameState.errorMessage.slice(0, 60)}
-        </text>
-      )}
-      <box flexDirection="row" gap={2}>
-        <text fg={COLORS.muted}>Ctrl+Q: Quit</text>
+        <box flexDirection="row" gap={2}>
+          <text fg={COLORS.muted}>Ctrl+Q: Quit</text>
+        </box>
       </box>
     </box>
   );

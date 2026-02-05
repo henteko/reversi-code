@@ -76,17 +76,19 @@ export function EditorScene({ rank, initialCode, onStartBattle, onBack }: Editor
   const modeColor = editorState.mode === "normal" ? COLORS.info : COLORS.success;
 
   return (
-    <box flexDirection="column">
-      <CodeEditor
-        editorState={editorState}
-        editorActions={editorActions}
-        isActive={true}
-        visibleLines={editorVisibleLines}
-        hint="Ctrl+R: Build  Ctrl+D: Start"
-      />
+    <box flexDirection="column" flexGrow={1}>
+      <box flexDirection="column" flexGrow={1}>
+        <CodeEditor
+          editorState={editorState}
+          editorActions={editorActions}
+          isActive={true}
+          visibleLines={editorVisibleLines}
+          hint="Ctrl+R: Build  Ctrl+D: Start"
+        />
+      </box>
 
       {/* Status bar */}
-      <text fg={COLORS.muted}>{"─".repeat(60)}</text>
+      <text fg={COLORS.muted}>{"─".repeat(process.stdout.columns || 80)}</text>
       <box flexDirection="row" gap={2}>
         <text><b fg={modeColor}>-- {modeLabel} --</b></text>
         <text><b fg={COLORS.accent}>VS {CPU_RANK_INFO[rank].title}</b></text>
@@ -96,7 +98,7 @@ export function EditorScene({ rank, initialCode, onStartBattle, onBack }: Editor
       </box>
       {errorMessage && (
         <text fg={COLORS.error}>
-          {errorMessage.slice(0, 60)}
+          {errorMessage.slice(0, (process.stdout.columns || 80) - 2)}
         </text>
       )}
       <box flexDirection="row" gap={2}>
