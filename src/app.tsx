@@ -152,7 +152,7 @@ export function App() {
   }
 
   return (
-    <Box backgroundColor={COLORS.appBg}>
+    <Box backgroundColor={COLORS.appBg} width="100%">
       {scene}
     </Box>
   );
