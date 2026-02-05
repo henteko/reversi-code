@@ -5,7 +5,7 @@ import type { CpuRank } from "../cpu/types.js";
 import { CPU_RANK_ORDER } from "../cpu/types.js";
 import type { ProgressData } from "./types.js";
 
-const PROGRESS_DIR = path.join(os.homedir(), ".code-reversi");
+const PROGRESS_DIR = path.join(os.homedir(), ".reversi-code");
 const PROGRESS_FILE = path.join(PROGRESS_DIR, "progress.json");
 
 const DEFAULT_PROGRESS: ProgressData = {

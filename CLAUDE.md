@@ -52,7 +52,7 @@ State machine in `src/app.tsx` with `GamePhase = "title" | "rank-select" | "batt
 
 ### Progress
 
-Wins and rank unlocks persisted at `~/.code-reversi/progress.json` via `src/progress/store.ts`.
+Wins and rank unlocks persisted at `~/.reversi-code/progress.json` via `src/progress/store.ts`.
 
 ## Conventions
 

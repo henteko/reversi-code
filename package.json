@@ -1,5 +1,5 @@
 {
-  "name": "code-reversi",
+  "name": "reversi-code",
   "version": "1.0.0",
   "description": "Terminal-based Reversi game where you code your strategy in TypeScript",
   "type": "module",
