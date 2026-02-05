@@ -9,9 +9,13 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["reversi", "othello", "terminal", "cli", "typescript", "game", "ink"],
+  "author": "henteko",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/henteko/reversi-code.git"
+  },
   "dependencies": {
     "esbuild": "^0.27.2",
     "ink": "^6.6.0",
