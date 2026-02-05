@@ -9,26 +9,26 @@ A terminal-based Reversi (Othello) game where you write your strategy in TypeScr
 ## Features
 
 - **Code your strategy** -- Write a `decideMove(board, myColor)` function in TypeScript using the built-in Vim-style editor
-- **Sandboxed execution** -- Your code runs in an [isolated-vm](https://github.com/nicolo-ribaudo/isolated-vm) sandbox (32MB memory, 1s timeout) each turn
+- **Sandboxed execution** -- Your code runs in a [node:vm](https://nodejs.org/api/vm.html) sandbox (1s timeout) each turn
 - **4 CPU ranks** to beat:
   - **Rank E** -- Random moves
   - **Rank C** -- Greedy (maximizes flips + corner priority)
   - **Rank A** -- Minimax with alpha-beta pruning
   - **Rank S** -- Bitboard-accelerated deep search
 - **Progress tracking** -- Wins and rank unlocks are saved between sessions
-- **Terminal UI** -- Built with [Ink](https://github.com/vadimdemedes/ink) (React for the terminal)
+- **Terminal UI** -- Built with [@opentui/react](https://github.com/anthropics/opentui) (React for the terminal)
 
 ## Requirements
 
-- Node.js >= 18
+- [Bun](https://bun.sh/) >= 1.0
 
 ## Getting Started
 
 ```bash
 git clone https://github.com/henteko/reversi-code.git
 cd reversi-code
-npm install
-npm run dev
+bun install
+bun src/index.tsx
 ```
 
 ## How to Play
@@ -72,18 +72,18 @@ function decideMove(board: number[][], myColor: number): [number, number] {
 ## Development
 
 ```bash
-npm run dev          # Run the app
-npm test             # Run all tests
-npm run test:watch   # Run tests in watch mode
-npm run build        # Compile TypeScript
+bun src/index.tsx    # Run the app
+bun test             # Run all tests
+bun run build        # Compile TypeScript
+bunx tsc --noEmit    # Type check only
 ```
 
 ## Tech Stack
 
-- [Ink](https://github.com/vadimdemedes/ink) + [React](https://react.dev/) -- Terminal UI
-- [isolated-vm](https://github.com/nicolo-ribaudo/isolated-vm) -- Sandboxed code execution
+- [Bun](https://bun.sh/) -- Runtime
+- [@opentui/react](https://github.com/anthropics/opentui) + [React](https://react.dev/) -- Terminal UI
+- [node:vm](https://nodejs.org/api/vm.html) -- Sandboxed code execution
 - [esbuild](https://esbuild.github.io/) -- TypeScript transpilation
-- [Vitest](https://vitest.dev/) -- Testing
 
 ## License
 
