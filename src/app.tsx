@@ -8,6 +8,7 @@ import { loadProgress, saveProgress, unlockNextRank, recordWin } from "./progres
 import type { ProgressData } from "./progress/types.js";
 import { TitleScene } from "./ui/scenes/title.js";
 import { RankSelectScene } from "./ui/scenes/rank-select.js";
+import { EditorScene } from "./ui/scenes/editor.js";
 import { BattleScene } from "./ui/scenes/battle.js";
 import { ResultScene } from "./ui/scenes/result.js";
 import { createBoard } from "./engine/board.js";
@@ -21,14 +22,15 @@ export function App() {
   const [lastBoard, setLastBoard] = useState<Board>(createBoard());
   const [unlockedRank, setUnlockedRank] = useState<CpuRank | null>(null);
   const [lastCode, setLastCode] = useState<string | undefined>(undefined);
+  const [compiledCode, setCompiledCode] = useState<string>("");
 
   // Global quit handler
   useInput((input, key) => {
-    // q on title, Ctrl+Q anywhere except battle (battle handles its own)
+    // q on title, Ctrl+Q anywhere except battle and editor (they handle their own)
     if (input === "q" && phase === "title") {
       exit();
     }
-    if (key.ctrl && input === "q" && phase !== "battle") {
+    if (key.ctrl && input === "q" && phase !== "battle" && phase !== "editor") {
       exit();
     }
   });
@@ -39,11 +41,21 @@ export function App() {
 
   const handleRankSelect = useCallback((rank: CpuRank) => {
     setSelectedRank(rank);
-    setPhase("battle");
+    setPhase("editor");
   }, []);
 
   const handleRankBack = useCallback(() => {
     setPhase("title");
+  }, []);
+
+  const handleEditorStart = useCallback((code: string) => {
+    setLastCode(code);
+    setCompiledCode(code);
+    setPhase("battle");
+  }, []);
+
+  const handleEditorBack = useCallback(() => {
+    setPhase("rank-select");
   }, []);
 
   const handleBattleResult = useCallback(
@@ -69,7 +81,7 @@ export function App() {
   );
 
   const handleBattleQuit = useCallback(() => {
-    setPhase("rank-select");
+    setPhase("editor");
   }, []);
 
   const handleResultContinue = useCallback(() => {
@@ -78,7 +90,7 @@ export function App() {
   }, []);
 
   const handleRematch = useCallback(() => {
-    setPhase("battle");
+    setPhase("editor");
     setUnlockedRank(null);
   }, []);
 
@@ -95,11 +107,21 @@ export function App() {
         />
       );
 
+    case "editor":
+      return (
+        <EditorScene
+          rank={selectedRank}
+          initialCode={lastCode || progress.lastCode}
+          onStartBattle={handleEditorStart}
+          onBack={handleEditorBack}
+        />
+      );
+
     case "battle":
       return (
         <BattleScene
           rank={selectedRank}
-          initialCode={lastCode || progress.lastCode}
+          code={compiledCode}
           onResult={handleBattleResult}
           onQuit={handleBattleQuit}
         />

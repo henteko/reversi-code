@@ -10,7 +10,7 @@ export interface MoveResult {
   player: PlayerColor;
 }
 
-export type GamePhase = "title" | "rank-select" | "battle" | "result";
+export type GamePhase = "title" | "rank-select" | "editor" | "battle" | "result";
 
 export function opponentColor(color: PlayerColor): PlayerColor {
   return color === "black" ? "white" : "black";

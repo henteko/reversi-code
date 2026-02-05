@@ -10,6 +10,7 @@ interface CodeEditorProps {
   isActive: boolean;
   visibleLines?: number;
   width?: number;
+  hint?: string;
 }
 
 export function CodeEditor({
@@ -18,6 +19,7 @@ export function CodeEditor({
   isActive,
   visibleLines = 20,
   width,
+  hint,
 }: CodeEditorProps) {
   const { lines, cursorRow, cursorCol, scrollOffset, mode } = editorState;
 
@@ -45,9 +47,11 @@ export function CodeEditor({
         <Text color={modeColor} bold>
           [{modeLabel}]
         </Text>
-        <Text color={COLORS.muted} dimColor>
-          {" "}Ctrl+D: Deploy
-        </Text>
+        {hint && (
+          <Text color={COLORS.muted} dimColor>
+            {" "}{hint}
+          </Text>
+        )}
       </Box>
       {visibleRange.map((line, idx) => {
         const lineNum = scrollOffset + idx;
