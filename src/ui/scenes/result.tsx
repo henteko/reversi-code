@@ -63,7 +63,7 @@ export function ResultScene({
   }
 
   return (
-    <Box flexDirection="column" paddingY={1} paddingX={2}>
+    <Box flexDirection="column" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 22) / 2))} paddingX={2}>
       <Box justifyContent="center" marginBottom={1}>
         <Text color={titleColor} bold>
           ══════ {title} ══════

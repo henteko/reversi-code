@@ -29,7 +29,7 @@ export function TitleScene({ onStart }: TitleSceneProps) {
   });
 
   return (
-    <Box flexDirection="column" alignItems="center" paddingY={1}>
+    <Box flexDirection="column" alignItems="center" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 17) / 2))}>
       <Text color={COLORS.accent}>{LOGO}</Text>
       <Text color={COLORS.muted}>
         Code your strategy. Defeat the CPU.

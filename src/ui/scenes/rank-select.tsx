@@ -40,7 +40,7 @@ export function RankSelectScene({ unlockedRanks, onSelect, onBack }: RankSelectS
   });
 
   return (
-    <Box flexDirection="column" paddingY={1} paddingX={2}>
+    <Box flexDirection="column" paddingTop={Math.max(0, Math.floor((process.stdout.rows - 10) / 2))} paddingX={2}>
       <Text color={COLORS.accent} bold>
         Select Opponent Rank
       </Text>

@@ -79,7 +79,7 @@ export function BattleScene({ rank, code, onResult, onQuit }: BattleSceneProps) 
 
         {/* Right panel: Game log */}
         <Box flexDirection="column" flexGrow={1}>
-          <GameLog entries={gameState.logs} maxLines={16} />
+          <GameLog entries={gameState.logs} maxLines={Math.max(8, process.stdout.rows - 6)} />
         </Box>
       </Box>
 

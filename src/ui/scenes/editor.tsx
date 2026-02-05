@@ -15,8 +15,10 @@ interface EditorSceneProps {
   onBack: () => void;
 }
 
+const editorVisibleLines = Math.max(10, process.stdout.rows - 5);
+
 export function EditorScene({ rank, initialCode, onStartBattle, onBack }: EditorSceneProps) {
-  const [editorState, editorActions] = useEditor(initialCode || DEFAULT_PLAYER_CODE, 24);
+  const [editorState, editorActions] = useEditor(initialCode || DEFAULT_PLAYER_CODE, editorVisibleLines);
   const [buildStatus, setBuildStatus] = useState<"idle" | "building" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
   const [buildOk, setBuildOk] = useState(false);
@@ -79,7 +81,7 @@ export function EditorScene({ rank, initialCode, onStartBattle, onBack }: Editor
         editorState={editorState}
         editorActions={editorActions}
         isActive={true}
-        visibleLines={24}
+        visibleLines={editorVisibleLines}
         hint="Ctrl+R: Build  Ctrl+D: Start"
       />
 
