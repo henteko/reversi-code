@@ -12,6 +12,7 @@ import { EditorScene } from "./ui/scenes/editor.js";
 import { BattleScene } from "./ui/scenes/battle.js";
 import { ResultScene } from "./ui/scenes/result.js";
 import { createBoard } from "./engine/board.js";
+import { COLORS } from "./ui/theme.js";
 
 export function App() {
   const { exit } = useApp();
@@ -94,21 +95,25 @@ export function App() {
     setUnlockedRank(null);
   }, []);
 
+  let scene: React.ReactNode;
+
   switch (phase) {
     case "title":
-      return <TitleScene onStart={handleTitleStart} />;
+      scene = <TitleScene onStart={handleTitleStart} />;
+      break;
 
     case "rank-select":
-      return (
+      scene = (
         <RankSelectScene
           unlockedRanks={progress.unlockedRanks}
           onSelect={handleRankSelect}
           onBack={handleRankBack}
         />
       );
+      break;
 
     case "editor":
-      return (
+      scene = (
         <EditorScene
           rank={selectedRank}
           initialCode={lastCode || progress.lastCode}
@@ -116,9 +121,10 @@ export function App() {
           onBack={handleEditorBack}
         />
       );
+      break;
 
     case "battle":
-      return (
+      scene = (
         <BattleScene
           rank={selectedRank}
           code={compiledCode}
@@ -126,9 +132,10 @@ export function App() {
           onQuit={handleBattleQuit}
         />
       );
+      break;
 
     case "result":
-      return (
+      scene = (
         <ResultScene
           board={lastBoard}
           result={lastResult!}
@@ -138,8 +145,15 @@ export function App() {
           onRematch={handleRematch}
         />
       );
+      break;
 
     default:
-      return <Box />;
+      scene = null;
   }
+
+  return (
+    <Box backgroundColor={COLORS.appBg}>
+      {scene}
+    </Box>
+  );
 }

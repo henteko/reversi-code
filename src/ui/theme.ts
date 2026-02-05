@@ -17,6 +17,7 @@ export const COLORS = {
   info: "#4488ff",
   muted: "#666666",
   accent: "#ff8800",
+  appBg: "#1e1e1e",
   editorBg: "#1e1e1e",
   editorText: "#d4d4d4",
   editorLineNumber: "#858585",
